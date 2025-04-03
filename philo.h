@@ -6,12 +6,13 @@
 /*   By: hnagashi <hnagashi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 12:39:06 by hnagashi          #+#    #+#             */
-/*   Updated: 2025/04/03 12:40:31 by hnagashi         ###   ########.fr       */
+/*   Updated: 2025/04/03 12:56:15 by hnagashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
 # include <stdio.h>
+# include <unistd.h>
 
 #endif

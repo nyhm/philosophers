@@ -13,3 +13,71 @@ Any state change of a philosopher must be formatted as follows:
 ◦ timestamp_in_ms X died
 120 3 has taken a fork
 のように表記する
+
+引数が数字かどうかを確認する
+memset, printf, malloc, free, write,
+usleep,
+gettimeofday ミリ秒で時間を計測
+    struct timeraval tv;
+    gettimeofday(&tv,NULL);
+
+pthread_create 新しいスレッドを作成
+    pthread_t thread;
+    pthread_create(&thread, NULL, thread_function, NULL);
+void *thread_function(void *arg)
+{
+    printf("Thread started\n");
+    sleep(1);
+    printf("Thread finished\n");
+    return NULL;
+}
+
+pthread_detach スレッドをデタッチして、終了時に自動でリソースを解放する。
+    pthread_t thread;
+    pthread_create(&thread, NULL, thread_function, NULL);
+    pthread_detach(thread); // スレッドの終了を待たない
+
+pthread_join スレッドの終了を待つ
+    pthread_t thread;
+    pthread_create(&thread, NULL, thread_function, NULL);
+    pthread_join(thread, NULL); // thread_function の終了を待つ
+
+thread_mutex_init ミューテックスの初期化
+pthread_mutex_destroy ミューテックスの破棄
+pthread_mutex_lock ミューテックスのロック(排他処理の開始)
+pthread_mutex_unlock ミューテックスのアンロック(排他処理の終了)
+が使える
+
+使い方
+#include <pthread.h>
+#include <stdio.h>
+
+pthread_mutex_t mutex;
+
+void *thread_function(void *arg)
+{
+    pthread_mutex_lock(&mutex);
+    printf("Thread %ld is inside the critical section\n", (long)arg);
+    pthread_mutex_unlock(&mutex);
+    return NULL;
+}
+
+int main(void)
+{
+    pthread_t t1, t2;
+    pthread_mutex_init(&mutex, NULL);
+
+    pthread_create(&t1, NULL, thread_function, (void *)1);
+    pthread_create(&t2, NULL, thread_function, (void *)2);
+
+    pthread_join(t1, NULL);
+    pthread_join(t2, NULL);
+
+    pthread_mutex_destroy(&mutex);
+    return 0;
+}
+
+
+「排他処理」とは、複数のスレッドやプロセスが同じリソースに同時にアクセスしないように制御する仕組み。
+pthread_mutex_lock や pthread_mutex_unlock を使うことで、共有リソースの保護ができる。
+
