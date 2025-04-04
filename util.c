@@ -1,18 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.c                                            :+:      :+:    :+:   */
+/*   util.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/03 12:37:52 by hnagashi          #+#    #+#             */
-/*   Updated: 2025/04/04 10:47:41 by hiroki           ###   ########.fr       */
+/*   Created: 2025/04/04 10:41:31 by hiroki            #+#    #+#             */
+/*   Updated: 2025/04/04 10:43:55 by hiroki           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	start(t_philo *philo)
+int	philo_destroy(t_philo *philo)
 {
-	philo->time_die = 0;
+	if (philo)
+	{
+		free(philo);
+		philo = NULL;
+	}
+	return (1);
 }
