@@ -6,16 +6,16 @@
 #    By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/03 12:32:52 by hnagashi          #+#    #+#              #
-#    Updated: 2025/04/04 10:52:16 by hiroki           ###   ########.fr        #
+#    Updated: 2025/04/08 00:11:43 by hiroki           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -fsanitize=address
 
 NAME = philo
 
-SRCS = main.c ft_atoi.c philo.c util.c
+SRCS = main.c ft_atoi.c philosopher.c util.c
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)

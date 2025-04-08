@@ -18,7 +18,7 @@ Any state change of a philosopher must be formatted as follows:
 memset, printf, malloc, free, write,
 usleep,
 gettimeofday ミリ秒で時間を計測
-    struct timeraval tv;
+struct timeval tv;
     gettimeofday(&tv,NULL);
 
 pthread_create 新しいスレッドを作成
@@ -39,7 +39,7 @@ pthread_detach スレッドをデタッチして、終了時に自動でリソ�
 
 pthread_join スレッドの終了を待つ
     pthread_t thread;
-    pthread_create(&thread, NULL, thread_function, NULL);
+    pthread_create(&thread, NULL, thread_function,philo);
     pthread_join(thread, NULL); // thread_function の終了を待つ
 
 thread_mutex_init ミューテックスの初期化

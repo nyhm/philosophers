@@ -6,35 +6,35 @@
 /*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 12:37:42 by hnagashi          #+#    #+#             */
-/*   Updated: 2025/04/04 10:46:20 by hiroki           ###   ########.fr       */
+/*   Updated: 2025/04/07 20:18:35 by hiroki           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	philo_init(t_philo *philo)
+int	philo_init(t_table *table)
 {
-	philo->time_die = 0;
-	philo->time_eat = 0;
-	philo->time_sleep = 0;
-	philo->philo_num = 0;
-	philo->must_eat = 0;
+	table->time_die = 0;
+	table->time_eat = 0;
+	table->time_sleep = 0;
+	table->philo_num = 0;
+	table->must_eat = 0;
 	return (1);
 }
 
-int	philo_check(t_philo *philo)
+int	philo_check(t_table *table)
 {
-	if (philo->philo_num <= 0 || philo->time_die <= 0 || philo->time_eat <= 0
-		|| philo->time_sleep <= 0 || philo->must_eat <= -1)
+	if (table->philo_num <= 0 || table->time_die <= 0 || table->time_eat <= 0
+		|| table->time_sleep <= 0 || table->must_eat <= -1)
 	{
-		printf("No valid input. Please insert positive integers.\n");
-		philo_destroy(philo);
+		printf("No valid input. \nPlease insert positive integers.\n");
+		philo_destroy(table);
 		return (1);
 	}
 	return (0);
 }
 
-int	philo_set(t_philo *philo, int ac, char **av)
+int	philo_set(t_table *table, int ac, char **av)
 {
 	if (ac < 5)
 	{
@@ -46,34 +46,34 @@ int	philo_set(t_philo *philo, int ac, char **av)
 		printf("No valid input.\nToo many arguments!\n");
 		return (1);
 	}
-	philo->philo_num = ft_atoi(av[1]);
-	philo->time_die = ft_atoi(av[2]);
-	philo->time_eat = ft_atoi(av[3]);
-	philo->time_sleep = ft_atoi(av[4]);
+	table->philo_num = ft_atoi(av[1]);
+	table->time_die = ft_atoi(av[2]);
+	table->time_eat = ft_atoi(av[3]);
+	table->time_sleep = ft_atoi(av[4]);
 	if (ac == 5)
-		philo->must_eat = 0;
+		table->must_eat = 0;
 	else
-		philo->must_eat = ft_atoi(av[5]);
-	if (philo_check(philo))
+		table->must_eat = ft_atoi(av[5]);
+	if (philo_check(table))
 		return (1);
 	return (0);
 }
 
 int	main(int ac, char **av)
 {
-	t_philo	*philo;
+	t_table	*table;
 
-	philo = NULL;
-	philo = malloc(sizeof(t_philo));
-	if (!philo)
+	table = NULL;
+	table = malloc(sizeof(t_table));
+	if (!table)
 	{
 		printf("Memory allocation failed\n");
 		return (1);
 	}
-	philo_init(philo);
-	if (philo_set(philo, ac, av))
+	philo_init(table);
+	if (philo_set(table, ac, av))
 		return (1);
-	start(philo);
-	philo_destroy(philo);
+	start(table);
+	philo_destroy(table);
 	return (0);
 }
