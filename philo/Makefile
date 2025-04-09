@@ -6,7 +6,7 @@
 #    By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/03 12:32:52 by hnagashi          #+#    #+#              #
-#    Updated: 2025/04/08 00:11:43 by hiroki           ###   ########.fr        #
+#    Updated: 2025/04/09 08:57:20 by hiroki           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ CFLAGS = -Wall -Wextra -Werror -fsanitize=address
 
 NAME = philo
 
-SRCS = main.c ft_atoi.c philosopher.c util.c
+SRCS = main.c ft_atoi.c philosopher.c util.c thread.c
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
