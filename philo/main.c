@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hnagashi <hnagashi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 12:37:42 by hnagashi          #+#    #+#             */
-/*   Updated: 2025/04/10 08:58:40 by hiroki           ###   ########.fr       */
+/*   Updated: 2025/04/10 16:55:26 by hnagashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ int	philo_init(t_table *table)
 	table->time_sleep = 0;
 	table->philo_num = 0;
 	table->must_eat = 0;
+	table->finish_count = 0;
 	return (1);
 }
 
@@ -28,7 +29,6 @@ int	table_check(t_table *table)
 		|| table->time_sleep <= 0 || table->must_eat <= -1)
 	{
 		printf("No valid input. \nPlease insert positive integers.\n");
-		philo_destroy(table);
 		return (1);
 	}
 	return (0);
@@ -72,8 +72,10 @@ int	main(int ac, char **av)
 	}
 	philo_init(table);
 	if (philo_set(table, ac, av))
+	{
+		free(table);
 		return (1);
+	}
 	start(table);
-	philo_destroy(table);
 	return (0);
 }

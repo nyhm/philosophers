@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philosopher.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hnagashi <hnagashi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 12:37:52 by hnagashi          #+#    #+#             */
-/*   Updated: 2025/04/10 10:15:26 by hiroki           ###   ########.fr       */
+/*   Updated: 2025/04/10 16:53:30 by hnagashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,14 +56,13 @@ void	start(t_table *table)
 	pthread_t		monitor_thread;
 
 	philos = malloc(sizeof(t_philo) * table->philo_num);
-	if (!philos)
-		return ;
 	forks = malloc(sizeof(pthread_mutex_t) * table->philo_num);
-	if (!forks)
-		return ;
 	meal_mutexes = malloc(sizeof(pthread_mutex_t) * table->philo_num);
-	if (!meal_mutexes)
+	if (philos == NULL || forks == NULL || meal_mutexes == NULL)
+	{
+		all_destroy(philos, table, forks, meal_mutexes);
 		return ;
+	}
 	table->start_time = get_time_in_ms() + 1000;
 	i = 0;
 	while (i < table->philo_num)
@@ -74,7 +73,5 @@ void	start(t_table *table)
 	}
 	pthread_create(&monitor_thread, NULL, monitor_philosopher, philos);
 	pthread_join(monitor_thread, NULL);
-	free(philos);
-	free(forks);
-	free(meal_mutexes);
+	all_destroy(philos, table, forks, meal_mutexes);
 }

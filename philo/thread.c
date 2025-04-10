@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   thread.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hnagashi <hnagashi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 08:55:36 by hiroki            #+#    #+#             */
-/*   Updated: 2025/04/10 10:34:38 by hiroki           ###   ########.fr       */
+/*   Updated: 2025/04/10 17:00:41 by hnagashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ void	*philosopher_routine(void *arg)
 {
 	t_philo	*philo;
 
+	pthread_detach(pthread_self());
 	philo = (t_philo *)arg;
 	wait_until_start(philo->table->start_time);
 	if (philo->id % 2 == 0)
@@ -43,7 +44,7 @@ void	*philosopher_routine(void *arg)
 	return (NULL);
 }
 
-int	philo_check(t_philo *philos, long long now, int i, int *finish_count)
+int	philo_check(t_philo *philos, long long now, int i)
 {
 	pthread_mutex_lock(philos[i].meal_mutex);
 	if (now - philos[i].last_eat > philos[i].table->time_die)
@@ -55,8 +56,21 @@ int	philo_check(t_philo *philos, long long now, int i, int *finish_count)
 		return (1);
 	}
 	if (philos[i].finished == 1)
-		(*finish_count)++;
+		philos->table->finish_count++;
 	pthread_mutex_unlock(philos[i].meal_mutex);
+	return (0);
+}
+
+int	philo_finish(t_philo *philos, long long now)
+{
+	if (philos->table->finish_count == philos->table->philo_num)
+	{
+		pthread_mutex_lock(philos->print_mutex);
+		printf("%lld All philosophers have finished eating\n", now
+			- philos->table->start_time);
+		pthread_mutex_unlock(philos->print_mutex);
+		return (1);
+	}
 	return (0);
 }
 
@@ -64,30 +78,22 @@ void	*monitor_philosopher(void *arg)
 {
 	t_philo		*philos;
 	int			i;
-	int			finish_count;
 	long long	now;
 
 	philos = (t_philo *)arg;
 	while (1)
 	{
 		i = 0;
-		finish_count = 0;
 		now = get_time_in_ms();
 		while (i < philos->table->philo_num)
 		{
-			if (philo_check(philos, now, i, &finish_count) == 1)
+			if (philo_check(philos, now, i) == 1)
 				return (NULL);
 			i++;
 		}
-		if (finish_count == philos->table->philo_num)
-		{
-			pthread_mutex_lock(philos->print_mutex);
-			printf("%lld All philosophers have finished eating\n", now
-				- philos->table->start_time);
-			pthread_mutex_unlock(philos->print_mutex);
+		if (philo_finish(philos, now) == 1)
 			return (NULL);
-		}
-		usleep(100);
+		usleep(50);
 	}
 	return (NULL);
 }

@@ -3,15 +3,15 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+         #
+#    By: hnagashi <hnagashi@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/03 12:32:52 by hnagashi          #+#    #+#              #
-#    Updated: 2025/04/09 08:57:20 by hiroki           ###   ########.fr        #
+#    Updated: 2025/04/10 15:45:46 by hnagashi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror
 
 NAME = philo
 

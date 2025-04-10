@@ -3,23 +3,35 @@
 /*                                                        :::      ::::::::   */
 /*   util.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hnagashi <hnagashi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 10:41:31 by hiroki            #+#    #+#             */
-/*   Updated: 2025/04/10 10:22:05 by hiroki           ###   ########.fr       */
+/*   Updated: 2025/04/10 16:56:44 by hnagashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	philo_destroy(t_table *table)
+void	all_destroy(t_philo *philos, t_table *table, pthread_mutex_t *forks,
+		pthread_mutex_t *meal_mutexes)
 {
-	if (table)
+	if (philos)
 	{
-		free(table);
-		table = NULL;
+		free(philos);
+		philos = NULL;
 	}
-	return (1);
+	if (forks)
+	{
+		free(forks);
+		forks = NULL;
+	}
+	if (meal_mutexes)
+	{
+		free(meal_mutexes);
+		meal_mutexes = NULL;
+	}
+	if (table)
+		free(table);
 }
 
 void	left_start(t_philo *philo)
