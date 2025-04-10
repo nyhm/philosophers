@@ -6,7 +6,7 @@
 /*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 12:39:06 by hnagashi          #+#    #+#             */
-/*   Updated: 2025/04/09 08:56:47 by hiroki           ###   ########.fr       */
+/*   Updated: 2025/04/10 10:21:34 by hiroki           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ typedef struct s_philo
 {
 	int				id;
 	int				eat_count;
+	int				finished;
 	time_t			last_eat;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
@@ -57,11 +58,14 @@ long				get_time_in_ms(void);
 // util.c
 int					philo_destroy(t_table *table);
 void				print_action(t_philo *philo, const char *action);
-void				left_start(t_philo *philo);
 void				right_start(t_philo *philo);
+void				left_start(t_philo *philo);
 int					eat_action(t_philo *philo);
 
 // thread.c
 void				*monitor_philosopher(void *arg);
 void				*philosopher_routine(void *arg);
+int					philo_check(t_philo *philos, long long now, int i,
+						int *finish_count);
+
 #endif

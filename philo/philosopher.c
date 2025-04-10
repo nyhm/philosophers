@@ -6,7 +6,7 @@
 /*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 12:37:52 by hnagashi          #+#    #+#             */
-/*   Updated: 2025/04/09 09:03:26 by hiroki           ###   ########.fr       */
+/*   Updated: 2025/04/10 10:15:26 by hiroki           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	precise_sleep(long ms)
 		usleep(100);
 }
 
-void	init_philo(t_philo *philos, pthread_mutex_t *meal_mutexes,
+void	create_philo(t_philo *philos, pthread_mutex_t *meal_mutexes,
 		pthread_mutex_t *forks, int i)
 {
 	pthread_mutex_init(&forks[i], NULL);
@@ -41,7 +41,8 @@ void	init_philo(t_philo *philos, pthread_mutex_t *meal_mutexes,
 	philos[i].print_mutex = &philos[i].table->print_mutex;
 	pthread_mutex_init(&meal_mutexes[i], NULL);
 	philos[i].meal_mutex = &meal_mutexes[i];
-	philos[i].last_eat = get_time_in_ms();
+	philos[i].last_eat = philos[i].table->start_time;
+	philos[i].finished = 0;
 	pthread_create(&philos[i].thread, NULL, philosopher_routine,
 		(void *)&philos[i]);
 }
@@ -63,14 +64,17 @@ void	start(t_table *table)
 	meal_mutexes = malloc(sizeof(pthread_mutex_t) * table->philo_num);
 	if (!meal_mutexes)
 		return ;
-	table->start_time = get_time_in_ms();
+	table->start_time = get_time_in_ms() + 1000;
 	i = 0;
 	while (i < table->philo_num)
 	{
 		philos[i].table = table;
-		init_philo(philos, meal_mutexes, forks, i);
+		create_philo(philos, meal_mutexes, forks, i);
 		i++;
 	}
 	pthread_create(&monitor_thread, NULL, monitor_philosopher, philos);
 	pthread_join(monitor_thread, NULL);
+	free(philos);
+	free(forks);
+	free(meal_mutexes);
 }

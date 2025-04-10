@@ -6,7 +6,7 @@
 /*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 12:37:42 by hnagashi          #+#    #+#             */
-/*   Updated: 2025/04/07 20:18:35 by hiroki           ###   ########.fr       */
+/*   Updated: 2025/04/10 08:58:40 by hiroki           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	philo_init(t_table *table)
 	return (1);
 }
 
-int	philo_check(t_table *table)
+int	table_check(t_table *table)
 {
 	if (table->philo_num <= 0 || table->time_die <= 0 || table->time_eat <= 0
 		|| table->time_sleep <= 0 || table->must_eat <= -1)
@@ -54,7 +54,7 @@ int	philo_set(t_table *table, int ac, char **av)
 		table->must_eat = 0;
 	else
 		table->must_eat = ft_atoi(av[5]);
-	if (philo_check(table))
+	if (table_check(table))
 		return (1);
 	return (0);
 }
