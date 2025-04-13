@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philosopher.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hnagashi <hnagashi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 12:37:52 by hnagashi          #+#    #+#             */
-/*   Updated: 2025/04/10 16:53:30 by hnagashi         ###   ########.fr       */
+/*   Updated: 2025/04/13 10:18:38 by hiroki           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,11 +53,13 @@ void	start(t_table *table)
 	pthread_mutex_t	*forks;
 	int				i;
 	pthread_mutex_t	*meal_mutexes;
+	pthread_mutex_t	*finish_mutexes;
 	pthread_t		monitor_thread;
 
 	philos = malloc(sizeof(t_philo) * table->philo_num);
 	forks = malloc(sizeof(pthread_mutex_t) * table->philo_num);
 	meal_mutexes = malloc(sizeof(pthread_mutex_t) * table->philo_num);
+	finish_mutexes = malloc(sizeof(pthread_mutex_t) * table->philo_num);
 	if (philos == NULL || forks == NULL || meal_mutexes == NULL)
 	{
 		all_destroy(philos, table, forks, meal_mutexes);
@@ -68,6 +70,8 @@ void	start(t_table *table)
 	while (i < table->philo_num)
 	{
 		philos[i].table = table;
+		pthread_mutex_init(&finish_mutexes[i], NULL);
+		philos[i].finish_mutex = &finish_mutexes[i];
 		create_philo(philos, meal_mutexes, forks, i);
 		i++;
 	}

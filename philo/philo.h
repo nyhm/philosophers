@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hnagashi <hnagashi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 12:39:06 by hnagashi          #+#    #+#             */
-/*   Updated: 2025/04/10 16:52:35 by hnagashi         ###   ########.fr       */
+/*   Updated: 2025/04/13 10:22:26 by hiroki           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ typedef struct s_table
 	long			start_time;
 	pthread_mutex_t	print_mutex;
 	int				finish_count;
+	int				finish_flag;
 }					t_table;
 
 typedef struct s_philo
@@ -44,6 +45,7 @@ typedef struct s_philo
 	pthread_mutex_t	*right_fork;
 	pthread_mutex_t	*print_mutex;
 	pthread_mutex_t	*meal_mutex;
+	pthread_mutex_t	*finish_mutex;
 	pthread_t		thread;
 	t_table			*table;
 }					t_philo;

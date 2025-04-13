@@ -6,7 +6,7 @@
 /*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 08:55:36 by hiroki            #+#    #+#             */
-/*   Updated: 2025/04/13 10:15:57 by hiroki           ###   ########.fr       */
+/*   Updated: 2025/04/13 10:23:22 by hiroki           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,13 @@ void	*philosopher_routine(void *arg)
 		usleep(200);
 	while (1)
 	{
+		pthread_mutex_lock(philo->finish_mutex);
+		if (philo->table->finish_flag == 1)
+		{
+			pthread_mutex_unlock(philo->finish_mutex);
+			break ;
+		}
+		pthread_mutex_unlock(philo->finish_mutex);
 		print_action(philo, "is thinking");
 		if (philo->id % 2 == 1)
 			left_start(philo);
@@ -52,6 +59,10 @@ int	philo_check(t_philo *philos, long long now, int i)
 		printf("%lld %d died\n", now - philos[i].table->start_time,
 			philos[i].id);
 		pthread_mutex_unlock(philos[i].print_mutex);
+		pthread_mutex_lock(philos[i].finish_mutex);
+		philos[i].table->finish_flag = 1;
+		pthread_mutex_unlock(philos[i].finish_mutex);
+		pthread_mutex_unlock(philos[i].meal_mutex);
 		return (1);
 	}
 	if (philos[i].finished == 1)
