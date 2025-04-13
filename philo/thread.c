@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   thread.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hnagashi <hnagashi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 08:55:36 by hiroki            #+#    #+#             */
-/*   Updated: 2025/04/10 17:00:41 by hnagashi         ###   ########.fr       */
+/*   Updated: 2025/04/13 10:15:57 by hiroki           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ void	*philosopher_routine(void *arg)
 {
 	t_philo	*philo;
 
-	pthread_detach(pthread_self());
 	philo = (t_philo *)arg;
 	wait_until_start(philo->table->start_time);
 	if (philo->id % 2 == 0)
@@ -52,7 +51,7 @@ int	philo_check(t_philo *philos, long long now, int i)
 		pthread_mutex_lock(philos[i].print_mutex);
 		printf("%lld %d died\n", now - philos[i].table->start_time,
 			philos[i].id);
-		pthread_mutex_unlock(philos[i].meal_mutex);
+		pthread_mutex_unlock(philos[i].print_mutex);
 		return (1);
 	}
 	if (philos[i].finished == 1)
