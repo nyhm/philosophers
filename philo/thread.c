@@ -6,7 +6,7 @@
 /*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 08:55:36 by hiroki            #+#    #+#             */
-/*   Updated: 2025/04/13 10:23:22 by hiroki           ###   ########.fr       */
+/*   Updated: 2025/04/13 12:43:41 by hiroki           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,10 +55,10 @@ int	philo_check(t_philo *philos, long long now, int i)
 	pthread_mutex_lock(philos[i].meal_mutex);
 	if (now - philos[i].last_eat > philos[i].table->time_die)
 	{
-		pthread_mutex_lock(philos[i].print_mutex);
+		pthread_mutex_lock(&philos[i].table->print_mutex);
 		printf("%lld %d died\n", now - philos[i].table->start_time,
 			philos[i].id);
-		pthread_mutex_unlock(philos[i].print_mutex);
+		pthread_mutex_unlock(&philos[i].table->print_mutex);
 		pthread_mutex_lock(philos[i].finish_mutex);
 		philos[i].table->finish_flag = 1;
 		pthread_mutex_unlock(philos[i].finish_mutex);
@@ -75,10 +75,10 @@ int	philo_finish(t_philo *philos, long long now)
 {
 	if (philos->table->finish_count == philos->table->philo_num)
 	{
-		pthread_mutex_lock(philos->print_mutex);
+		pthread_mutex_lock(&philos->table->print_mutex);
 		printf("%lld All philosophers have finished eating\n", now
 			- philos->table->start_time);
-		pthread_mutex_unlock(philos->print_mutex);
+		pthread_mutex_unlock(&philos->table->print_mutex);
 		return (1);
 	}
 	return (0);

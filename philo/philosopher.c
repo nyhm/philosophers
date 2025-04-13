@@ -6,7 +6,7 @@
 /*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 12:37:52 by hnagashi          #+#    #+#             */
-/*   Updated: 2025/04/13 10:18:38 by hiroki           ###   ########.fr       */
+/*   Updated: 2025/04/13 12:43:10 by hiroki           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ void	create_philo(t_philo *philos, pthread_mutex_t *meal_mutexes,
 	philos[i].left_fork = &forks[i];
 	philos[i].right_fork = &forks[(i + 1) % philos[i].table->philo_num];
 	pthread_mutex_init(&philos[i].table->print_mutex, NULL);
-	philos[i].print_mutex = &philos[i].table->print_mutex;
 	pthread_mutex_init(&meal_mutexes[i], NULL);
 	philos[i].meal_mutex = &meal_mutexes[i];
 	philos[i].last_eat = philos[i].table->start_time;

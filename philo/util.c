@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   util.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hnagashi <hnagashi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 10:41:31 by hiroki            #+#    #+#             */
-/*   Updated: 2025/04/10 16:56:44 by hnagashi         ###   ########.fr       */
+/*   Updated: 2025/04/13 12:42:35 by hiroki           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,10 +54,10 @@ void	print_action(t_philo *philo, const char *action)
 {
 	long	timestamp;
 
-	pthread_mutex_lock(philo->print_mutex);
+	pthread_mutex_lock(&philo->table->print_mutex);
 	timestamp = get_time_in_ms() - philo->table->start_time;
 	printf("%ld %d %s\n", timestamp, philo->id, action);
-	pthread_mutex_unlock(philo->print_mutex);
+	pthread_mutex_unlock(&philo->table->print_mutex);
 }
 
 int	eat_action(t_philo *philo)

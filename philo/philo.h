@@ -6,7 +6,7 @@
 /*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 12:39:06 by hnagashi          #+#    #+#             */
-/*   Updated: 2025/04/13 10:22:26 by hiroki           ###   ########.fr       */
+/*   Updated: 2025/04/13 12:41:15 by hiroki           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ typedef struct s_philo
 	time_t			last_eat;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
-	pthread_mutex_t	*print_mutex;
 	pthread_mutex_t	*meal_mutex;
 	pthread_mutex_t	*finish_mutex;
 	pthread_t		thread;
