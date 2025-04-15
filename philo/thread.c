@@ -6,7 +6,7 @@
 /*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 08:55:36 by hiroki            #+#    #+#             */
-/*   Updated: 2025/04/13 12:43:41 by hiroki           ###   ########.fr       */
+/*   Updated: 2025/04/15 19:05:54 by hiroki           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,13 @@ void	*philosopher_routine(void *arg)
 		usleep(200);
 	while (1)
 	{
-		pthread_mutex_lock(philo->finish_mutex);
+		pthread_mutex_lock(&philo->table->finish_mutex);
 		if (philo->table->finish_flag == 1)
 		{
-			pthread_mutex_unlock(philo->finish_mutex);
+			pthread_mutex_unlock(&philo->table->finish_mutex);
 			break ;
 		}
-		pthread_mutex_unlock(philo->finish_mutex);
+		pthread_mutex_unlock(&philo->table->finish_mutex);
 		print_action(philo, "is thinking");
 		if (philo->id % 2 == 1)
 			left_start(philo);
@@ -42,8 +42,15 @@ void	*philosopher_routine(void *arg)
 			right_start(philo);
 		if (!eat_action(philo))
 			return (NULL);
-		pthread_mutex_unlock(philo->right_fork);
-		pthread_mutex_unlock(philo->left_fork);
+		pthread_mutex_unlock(&philo->table->forks[philo->right_fork]);
+		pthread_mutex_unlock(&philo->table->forks[philo->left_fork]);
+		pthread_mutex_lock(&philo->table->finish_mutex);
+		if (philo->table->finish_flag == 1)
+		{
+			pthread_mutex_unlock(&philo->table->finish_mutex);
+			break ;
+		}
+		pthread_mutex_unlock(&philo->table->finish_mutex);
 		print_action(philo, "is sleeping");
 		precise_sleep(philo->table->time_sleep);
 	}
@@ -52,22 +59,27 @@ void	*philosopher_routine(void *arg)
 
 int	philo_check(t_philo *philos, long long now, int i)
 {
-	pthread_mutex_lock(philos[i].meal_mutex);
+	pthread_mutex_lock(&philos[i].meal_mutex);
 	if (now - philos[i].last_eat > philos[i].table->time_die)
 	{
 		pthread_mutex_lock(&philos[i].table->print_mutex);
 		printf("%lld %d died\n", now - philos[i].table->start_time,
 			philos[i].id);
 		pthread_mutex_unlock(&philos[i].table->print_mutex);
-		pthread_mutex_lock(philos[i].finish_mutex);
+		pthread_mutex_lock(&philos[i].table->finish_mutex);
 		philos[i].table->finish_flag = 1;
-		pthread_mutex_unlock(philos[i].finish_mutex);
-		pthread_mutex_unlock(philos[i].meal_mutex);
+		pthread_mutex_unlock(&philos[i].table->finish_mutex);
+		pthread_mutex_unlock(&philos[i].meal_mutex);
 		return (1);
 	}
+	pthread_mutex_lock(&philos[i].table->finish_mutex);
 	if (philos[i].finished == 1)
+	{
 		philos->table->finish_count++;
-	pthread_mutex_unlock(philos[i].meal_mutex);
+		philos[i].finished = 0;
+	}
+	pthread_mutex_unlock(&philos[i].table->finish_mutex);
+	pthread_mutex_unlock(&philos[i].meal_mutex);
 	return (0);
 }
 

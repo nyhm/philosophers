@@ -6,29 +6,30 @@
 /*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 10:41:31 by hiroki            #+#    #+#             */
-/*   Updated: 2025/04/13 12:42:35 by hiroki           ###   ########.fr       */
+/*   Updated: 2025/04/15 19:06:01 by hiroki           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	all_destroy(t_philo *philos, t_table *table, pthread_mutex_t *forks,
-		pthread_mutex_t *meal_mutexes)
+void	all_destroy(t_philo *philos, t_table *table)
 {
+	int	i;
+
 	if (philos)
 	{
+		pthread_mutex_destroy(&table->print_mutex);
+		pthread_mutex_destroy(&table->finish_mutex);
+		i = 0;
+		while (i < table->philo_num)
+		{
+			pthread_mutex_destroy(&philos[i].meal_mutex);
+			pthread_mutex_destroy(&table->forks[i]);
+			i++;
+		}
+		free(table->forks);
 		free(philos);
 		philos = NULL;
-	}
-	if (forks)
-	{
-		free(forks);
-		forks = NULL;
-	}
-	if (meal_mutexes)
-	{
-		free(meal_mutexes);
-		meal_mutexes = NULL;
 	}
 	if (table)
 		free(table);
@@ -36,18 +37,18 @@ void	all_destroy(t_philo *philos, t_table *table, pthread_mutex_t *forks,
 
 void	left_start(t_philo *philo)
 {
-	pthread_mutex_lock(philo->left_fork);
-	print_action(philo, "has taken a left fork");
-	pthread_mutex_lock(philo->right_fork);
-	print_action(philo, "has taken a right fork");
+	pthread_mutex_lock(&philo->table->forks[philo->left_fork]);
+	print_action(philo, "has taken a fork");
+	pthread_mutex_lock(&philo->table->forks[philo->right_fork]);
+	print_action(philo, "has taken a fork");
 }
 
 void	right_start(t_philo *philo)
 {
-	pthread_mutex_lock(philo->right_fork);
-	print_action(philo, "has taken a right fork");
-	pthread_mutex_lock(philo->left_fork);
-	print_action(philo, "has taken a left fork");
+	pthread_mutex_lock(&philo->table->forks[philo->right_fork]);
+	print_action(philo, "has taken a fork");
+	pthread_mutex_lock(&philo->table->forks[philo->left_fork]);
+	print_action(philo, "has taken a fork");
 }
 
 void	print_action(t_philo *philo, const char *action)
@@ -63,15 +64,15 @@ void	print_action(t_philo *philo, const char *action)
 int	eat_action(t_philo *philo)
 {
 	print_action(philo, "is eating");
-	pthread_mutex_lock(philo->meal_mutex);
+	pthread_mutex_lock(&philo->meal_mutex);
 	philo->last_eat = get_time_in_ms();
-	pthread_mutex_unlock(philo->meal_mutex);
+	pthread_mutex_unlock(&philo->meal_mutex);
 	philo->eat_count++;
 	precise_sleep(philo->table->time_eat);
 	if (philo->eat_count == philo->table->must_eat)
 	{
-		pthread_mutex_unlock(philo->right_fork);
-		pthread_mutex_unlock(philo->left_fork);
+		pthread_mutex_unlock(&philo->table->forks[philo->right_fork]);
+		pthread_mutex_unlock(&philo->table->forks[philo->left_fork]);
 		philo->finished = 1;
 		return (0);
 	}

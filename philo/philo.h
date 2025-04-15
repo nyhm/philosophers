@@ -6,7 +6,7 @@
 /*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 12:39:06 by hnagashi          #+#    #+#             */
-/*   Updated: 2025/04/13 12:41:15 by hiroki           ###   ########.fr       */
+/*   Updated: 2025/04/15 19:05:37 by hiroki           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@ typedef struct s_table
 	int				must_eat;
 	long			start_time;
 	pthread_mutex_t	print_mutex;
+	pthread_mutex_t	finish_mutex;
+	pthread_mutex_t	*forks;
 	int				finish_count;
 	int				finish_flag;
 }					t_table;
@@ -41,10 +43,9 @@ typedef struct s_philo
 	int				eat_count;
 	int				finished;
 	time_t			last_eat;
-	pthread_mutex_t	*left_fork;
-	pthread_mutex_t	*right_fork;
-	pthread_mutex_t	*meal_mutex;
-	pthread_mutex_t	*finish_mutex;
+	int				left_fork;
+	int				right_fork;
+	pthread_mutex_t	meal_mutex;
 	pthread_t		thread;
 	t_table			*table;
 }					t_philo;
@@ -62,8 +63,7 @@ void				print_action(t_philo *philo, const char *action);
 void				right_start(t_philo *philo);
 void				left_start(t_philo *philo);
 int					eat_action(t_philo *philo);
-void				all_destroy(t_philo *philos, t_table *table,
-						pthread_mutex_t *forks, pthread_mutex_t *meal_mutexes);
+void				all_destroy(t_philo *philos, t_table *table);
 
 // thread.c
 void				*monitor_philosopher(void *arg);

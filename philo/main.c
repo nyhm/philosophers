@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hnagashi <hnagashi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 12:37:42 by hnagashi          #+#    #+#             */
-/*   Updated: 2025/04/10 16:55:26 by hnagashi         ###   ########.fr       */
+/*   Updated: 2025/04/15 19:05:26 by hiroki           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ int	philo_init(t_table *table)
 	table->philo_num = 0;
 	table->must_eat = 0;
 	table->finish_count = 0;
+	table->start_time = 0;
 	return (1);
 }
 
@@ -36,6 +37,8 @@ int	table_check(t_table *table)
 
 int	philo_set(t_table *table, int ac, char **av)
 {
+	pthread_mutex_t	*forks;
+
 	if (ac < 5)
 	{
 		printf("No valid input.\nNot enough arguments!\n");
@@ -54,8 +57,27 @@ int	philo_set(t_table *table, int ac, char **av)
 		table->must_eat = 0;
 	else
 		table->must_eat = ft_atoi(av[5]);
-	if (table_check(table))
+	forks = malloc(sizeof(pthread_mutex_t) * table->philo_num);
+	if (!forks)
+	{
+		printf("Memory allocation for forks failed\n");
 		return (1);
+	}
+	// ミューテックスの初期化
+	for (int i = 0; i < table->philo_num; i++)
+	{
+		if (pthread_mutex_init(&forks[i], NULL) != 0)
+		{
+			printf("Mutex initialization failed\n");
+			free(forks);
+			return (1);
+		}
+	}
+	table->forks = forks;
+	if (table_check(table))
+	{
+		return (1);
+	}
 	return (0);
 }
 
