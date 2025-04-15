@@ -6,13 +6,13 @@
 /*   By: hnagashi <hnagashi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 12:37:42 by hnagashi          #+#    #+#             */
-/*   Updated: 2025/04/15 20:12:03 by hnagashi         ###   ########.fr       */
+/*   Updated: 2025/04/15 21:14:44 by hnagashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	philo_init(t_table *table)
+int	table_init(t_table *table)
 {
 	table->time_die = 0;
 	table->time_eat = 0;
@@ -35,10 +35,34 @@ int	table_check(t_table *table)
 	return (0);
 }
 
-int	philo_set(t_table *table, int ac, char **av)
+int	set_fork(t_table *table)
 {
 	pthread_mutex_t	*forks;
+	int				i;
 
+	forks = malloc(sizeof(pthread_mutex_t) * table->philo_num);
+	if (!forks)
+	{
+		printf("Memory allocation for forks failed\n");
+		return (1);
+	}
+	i = 0;
+	while (i < table->philo_num)
+	{
+		if (pthread_mutex_init(&forks[i], NULL) != 0)
+		{
+			printf("Mutex initialization failed\n");
+			free(forks);
+			return (1);
+		}
+		i++;
+	}
+	table->forks = forks;
+	return (0);
+}
+
+int	philo_set(t_table *table, int ac, char **av)
+{
 	if (ac < 5)
 	{
 		printf("No valid input.\nNot enough arguments!\n");
@@ -57,22 +81,8 @@ int	philo_set(t_table *table, int ac, char **av)
 		table->must_eat = 0;
 	else
 		table->must_eat = ft_atoi(av[5]);
-	forks = malloc(sizeof(pthread_mutex_t) * table->philo_num);
-	if (!forks)
-	{
-		printf("Memory allocation for forks failed\n");
+	if (set_fork(table))
 		return (1);
-	}
-	for (int i = 0; i < table->philo_num; i++)
-	{
-		if (pthread_mutex_init(&forks[i], NULL) != 0)
-		{
-			printf("Mutex initialization failed\n");
-			free(forks);
-			return (1);
-		}
-	}
-	table->forks = forks;
 	if (table_check(table))
 	{
 		return (1);
@@ -91,7 +101,7 @@ int	main(int ac, char **av)
 		printf("Memory allocation failed\n");
 		return (1);
 	}
-	philo_init(table);
+	table_init(table);
 	if (philo_set(table, ac, av))
 	{
 		free(table);

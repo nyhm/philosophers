@@ -6,7 +6,7 @@
 #    By: hnagashi <hnagashi@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/03 12:32:52 by hnagashi          #+#    #+#              #
-#    Updated: 2025/04/10 15:45:46 by hnagashi         ###   ########.fr        #
+#    Updated: 2025/04/15 21:09:47 by hnagashi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ CFLAGS = -Wall -Wextra -Werror
 
 NAME = philo
 
-SRCS = main.c ft_atoi.c philosopher.c util.c thread.c
+SRCS = main.c ft_atoi.c philosopher.c util.c thread.c util_philo.c
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)

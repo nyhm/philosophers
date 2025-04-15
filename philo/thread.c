@@ -6,16 +6,25 @@
 /*   By: hnagashi <hnagashi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 08:55:36 by hiroki            #+#    #+#             */
-/*   Updated: 2025/04/15 20:38:35 by hnagashi         ###   ########.fr       */
+/*   Updated: 2025/04/15 21:08:36 by hnagashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	wait_until_start(long start_time)
+int	alone_philo(t_philo *philo)
 {
-	while (get_time_in_ms() < start_time)
-		usleep(100);
+	if (philo->table->philo_num == 1)
+	{
+		pthread_mutex_lock(&philo->table->forks[philo->left_fork]);
+		print_action(philo, "has taken a fork");
+		pthread_mutex_lock(&philo->table->finish_mutex);
+		philo->table->finish_flag = 1;
+		pthread_mutex_unlock(&philo->table->finish_mutex);
+		pthread_mutex_unlock(&philo->table->forks[philo->left_fork]);
+		return (1);
+	}
+	return (0);
 }
 
 void	*philosopher_routine(void *arg)
@@ -26,49 +35,21 @@ void	*philosopher_routine(void *arg)
 	wait_until_start(philo->table->start_time);
 	if (philo->id % 2 == 0)
 		usleep(500);
-	if (philo->table->time_die == 0)
-	{
-		pthread_mutex_lock(&philo->table->finish_mutex);
-		philo->table->finish_flag = 1;
-		pthread_mutex_unlock(&philo->table->finish_mutex);
+	if (zero_time_die(philo) == 1)
 		return (NULL);
-	}
-	if (philo->table->philo_num == 1)
-	{
-		pthread_mutex_lock(&philo->table->forks[philo->left_fork]);
-		print_action(philo, "has taken a fork");
-		pthread_mutex_lock(&philo->table->finish_mutex);
-		philo->table->finish_flag = 1;
-		pthread_mutex_unlock(&philo->table->finish_mutex);
-		pthread_mutex_unlock(&philo->table->forks[philo->left_fork]);
+	if (alone_philo(philo) == 1)
 		return (NULL);
-	}
 	while (1)
 	{
-		pthread_mutex_lock(&philo->table->finish_mutex);
-		if (philo->table->finish_flag == 1)
-		{
-			pthread_mutex_unlock(&philo->table->finish_mutex);
+		if (finish_check(philo) == 1)
 			break ;
-		}
-		pthread_mutex_unlock(&philo->table->finish_mutex);
 		print_action(philo, "is thinking");
-		// if (philo->id % 2 == 1)
-		// 	left_start(philo);
-		// else
-		// 	right_start(philo);
 		left_start(philo);
 		eat_action(philo);
-		philo->eat_count++;
 		pthread_mutex_unlock(&philo->table->forks[philo->right_fork]);
 		pthread_mutex_unlock(&philo->table->forks[philo->left_fork]);
-		pthread_mutex_lock(&philo->table->finish_mutex);
-		if (philo->table->finish_flag == 1)
-		{
-			pthread_mutex_unlock(&philo->table->finish_mutex);
+		if (finish_check(philo) == 1)
 			break ;
-		}
-		pthread_mutex_unlock(&philo->table->finish_mutex);
 		print_action(philo, "is sleeping");
 		precise_sleep(philo->table->time_sleep);
 	}

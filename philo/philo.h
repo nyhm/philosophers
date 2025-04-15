@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hnagashi <hnagashi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 12:39:06 by hnagashi          #+#    #+#             */
-/*   Updated: 2025/04/15 19:05:37 by hiroki           ###   ########.fr       */
+/*   Updated: 2025/04/15 21:09:33 by hnagashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,13 +57,15 @@ int					ft_atoi(const char *str);
 void				start(t_table *table);
 void				precise_sleep(long ms);
 long				get_time_in_ms(void);
+int					finish_check(t_philo *philo);
 
 // util.c
 void				print_action(t_philo *philo, const char *action);
-void				right_start(t_philo *philo);
 void				left_start(t_philo *philo);
 int					eat_action(t_philo *philo);
 void				all_destroy(t_philo *philos, t_table *table);
+int					zero_time_die(t_philo *philo);
+void				wait_until_start(long start_time);
 
 // thread.c
 void				*monitor_philosopher(void *arg);

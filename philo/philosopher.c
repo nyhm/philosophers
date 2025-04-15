@@ -3,20 +3,37 @@
 /*                                                        :::      ::::::::   */
 /*   philosopher.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hnagashi <hnagashi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 12:37:52 by hnagashi          #+#    #+#             */
-/*   Updated: 2025/04/15 19:05:46 by hiroki           ###   ########.fr       */
+/*   Updated: 2025/04/15 21:10:23 by hnagashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+int	finish_check(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->table->finish_mutex);
+	if (philo->table->finish_flag == 1)
+	{
+		pthread_mutex_unlock(&philo->table->finish_mutex);
+		return (1);
+	}
+	pthread_mutex_unlock(&philo->table->finish_mutex);
+	return (0);
+}
 
 long	get_time_in_ms(void)
 {
 	struct timeval	tv;
 
 	gettimeofday(&tv, NULL);
+	if (tv.tv_sec < 0 || tv.tv_usec < 0)
+	{
+		printf("Error: gettimeofday failed\n");
+		return (-1);
+	}
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
@@ -31,6 +48,7 @@ void	precise_sleep(long ms)
 
 void	create_philo(t_philo *philos, int i, t_table *table)
 {
+	pthread_mutex_init(&table->forks[i], NULL);
 	philos[i].table = table;
 	philos[i].id = i + 1;
 	philos[i].eat_count = 0;
@@ -62,18 +80,11 @@ void	start(t_table *table)
 	pthread_mutex_init(&table->finish_mutex, NULL);
 	i = 0;
 	while (i < table->philo_num)
-	{
-		pthread_mutex_init(&table->forks[i], NULL);
-		create_philo(philos, i, table);
-		i++;
-	}
+		create_philo(philos, i++, table);
 	pthread_create(&monitor_thread, NULL, monitor_philosopher, philos);
 	pthread_join(monitor_thread, NULL);
 	i = 0;
 	while (i < table->philo_num)
-	{
-		pthread_join(philos[i].thread, NULL);
-		i++;
-	}
+		pthread_join(philos[i++].thread, NULL);
 	all_destroy(philos, table);
 }
