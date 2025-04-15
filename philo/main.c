@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hnagashi <hnagashi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 12:37:42 by hnagashi          #+#    #+#             */
-/*   Updated: 2025/04/15 19:05:26 by hiroki           ###   ########.fr       */
+/*   Updated: 2025/04/15 20:12:03 by hnagashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int	philo_init(t_table *table)
 
 int	table_check(t_table *table)
 {
-	if (table->philo_num <= 0 || table->time_die <= 0 || table->time_eat <= 0
+	if (table->philo_num <= 0 || table->time_die < 0 || table->time_eat <= 0
 		|| table->time_sleep <= 0 || table->must_eat <= -1)
 	{
 		printf("No valid input. \nPlease insert positive integers.\n");
@@ -63,7 +63,6 @@ int	philo_set(t_table *table, int ac, char **av)
 		printf("Memory allocation for forks failed\n");
 		return (1);
 	}
-	// ミューテックスの初期化
 	for (int i = 0; i < table->philo_num; i++)
 	{
 		if (pthread_mutex_init(&forks[i], NULL) != 0)

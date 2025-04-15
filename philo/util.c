@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   util.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hnagashi <hnagashi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 10:41:31 by hiroki            #+#    #+#             */
-/*   Updated: 2025/04/15 19:06:01 by hiroki           ###   ########.fr       */
+/*   Updated: 2025/04/15 20:25:36 by hnagashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,13 @@ void	print_action(t_philo *philo, const char *action)
 {
 	long	timestamp;
 
+	pthread_mutex_lock(&philo->table->finish_mutex);
+	if (philo->table->finish_flag == 1)
+	{
+		pthread_mutex_unlock(&philo->table->finish_mutex);
+		return ;
+	}
+	pthread_mutex_unlock(&philo->table->finish_mutex);
 	pthread_mutex_lock(&philo->table->print_mutex);
 	timestamp = get_time_in_ms() - philo->table->start_time;
 	printf("%ld %d %s\n", timestamp, philo->id, action);
@@ -67,14 +74,12 @@ int	eat_action(t_philo *philo)
 	pthread_mutex_lock(&philo->meal_mutex);
 	philo->last_eat = get_time_in_ms();
 	pthread_mutex_unlock(&philo->meal_mutex);
-	philo->eat_count++;
 	precise_sleep(philo->table->time_eat);
 	if (philo->eat_count == philo->table->must_eat)
 	{
-		pthread_mutex_unlock(&philo->table->forks[philo->right_fork]);
-		pthread_mutex_unlock(&philo->table->forks[philo->left_fork]);
+		pthread_mutex_lock(&philo->table->finish_mutex);
 		philo->finished = 1;
-		return (0);
+		pthread_mutex_unlock(&philo->table->finish_mutex);
 	}
 	return (1);
 }

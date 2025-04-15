@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   thread.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hiroki <hiroki@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hnagashi <hnagashi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 08:55:36 by hiroki            #+#    #+#             */
-/*   Updated: 2025/04/15 19:05:54 by hiroki           ###   ########.fr       */
+/*   Updated: 2025/04/15 20:38:35 by hnagashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,24 @@ void	*philosopher_routine(void *arg)
 	philo = (t_philo *)arg;
 	wait_until_start(philo->table->start_time);
 	if (philo->id % 2 == 0)
-		usleep(200);
+		usleep(500);
+	if (philo->table->time_die == 0)
+	{
+		pthread_mutex_lock(&philo->table->finish_mutex);
+		philo->table->finish_flag = 1;
+		pthread_mutex_unlock(&philo->table->finish_mutex);
+		return (NULL);
+	}
+	if (philo->table->philo_num == 1)
+	{
+		pthread_mutex_lock(&philo->table->forks[philo->left_fork]);
+		print_action(philo, "has taken a fork");
+		pthread_mutex_lock(&philo->table->finish_mutex);
+		philo->table->finish_flag = 1;
+		pthread_mutex_unlock(&philo->table->finish_mutex);
+		pthread_mutex_unlock(&philo->table->forks[philo->left_fork]);
+		return (NULL);
+	}
 	while (1)
 	{
 		pthread_mutex_lock(&philo->table->finish_mutex);
@@ -36,12 +53,13 @@ void	*philosopher_routine(void *arg)
 		}
 		pthread_mutex_unlock(&philo->table->finish_mutex);
 		print_action(philo, "is thinking");
-		if (philo->id % 2 == 1)
-			left_start(philo);
-		else
-			right_start(philo);
-		if (!eat_action(philo))
-			return (NULL);
+		// if (philo->id % 2 == 1)
+		// 	left_start(philo);
+		// else
+		// 	right_start(philo);
+		left_start(philo);
+		eat_action(philo);
+		philo->eat_count++;
 		pthread_mutex_unlock(&philo->table->forks[philo->right_fork]);
 		pthread_mutex_unlock(&philo->table->forks[philo->left_fork]);
 		pthread_mutex_lock(&philo->table->finish_mutex);
@@ -62,13 +80,14 @@ int	philo_check(t_philo *philos, long long now, int i)
 	pthread_mutex_lock(&philos[i].meal_mutex);
 	if (now - philos[i].last_eat > philos[i].table->time_die)
 	{
+		pthread_mutex_lock(&philos[i].table->finish_mutex);
+		philos[i].table->finish_flag = 1;
+		pthread_mutex_unlock(&philos[i].table->finish_mutex);
+		usleep(300);
 		pthread_mutex_lock(&philos[i].table->print_mutex);
 		printf("%lld %d died\n", now - philos[i].table->start_time,
 			philos[i].id);
 		pthread_mutex_unlock(&philos[i].table->print_mutex);
-		pthread_mutex_lock(&philos[i].table->finish_mutex);
-		philos[i].table->finish_flag = 1;
-		pthread_mutex_unlock(&philos[i].table->finish_mutex);
 		pthread_mutex_unlock(&philos[i].meal_mutex);
 		return (1);
 	}
@@ -85,8 +104,13 @@ int	philo_check(t_philo *philos, long long now, int i)
 
 int	philo_finish(t_philo *philos, long long now)
 {
-	if (philos->table->finish_count == philos->table->philo_num)
+	if (philos->table->finish_count == philos->table->philo_num
+		&& philos->table->must_eat > 0)
 	{
+		pthread_mutex_lock(&philos->table->finish_mutex);
+		philos->table->finish_flag = 1;
+		pthread_mutex_unlock(&philos->table->finish_mutex);
+		usleep(300);
 		pthread_mutex_lock(&philos->table->print_mutex);
 		printf("%lld All philosophers have finished eating\n", now
 			- philos->table->start_time);
